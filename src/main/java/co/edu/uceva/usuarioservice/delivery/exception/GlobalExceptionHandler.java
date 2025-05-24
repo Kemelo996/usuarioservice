@@ -14,7 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final String ERROR = "error";
-    private static final String MENSAJE = "mensaje";;
+    private static final String MENSAJE = "mensaje";
     private static final String USUARIOS = "usuarios";
     private static final String STATUS = "status";
 
