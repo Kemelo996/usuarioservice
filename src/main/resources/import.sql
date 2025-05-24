@@ -1,0 +1,10 @@
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES ('12345678', '$2a$10$ABC123', 'kevin@montes.com', 'Kevin Montes', 'Docente', '3216549870');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('87654321', '$2a$10$XYZ456', 'juan@empresa.com', 'Juan Pérez', 'Rector', '3123456789');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('54637281', '$2a$10$DEF789', 'maria@empresa.com', 'María López', 'Decano', '3187654321');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('21987654', '$2a$10$GHI012', 'carlos@empresa.com', 'Carlos Gómez', 'Estudiante', '3001234567');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('83476521', '$2a$10$JKL345', 'ana@empresa.com', 'Ana Rodríguez', 'Docente', '3209876543');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('67548219', '$2a$10$MNO678', 'pedro@empresa.com', 'Pedro Sánchez', 'Decano', '3156789432');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('48723109', '$2a$10$PQR901', 'laura@empresa.com', 'Laura Martínez', 'Rector', '3178901234');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('92654387', '$2a$10$STU234', 'daniel@empresa.com', 'Daniel Fernández', 'Docente', '3012345678');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('31879265', '$2a$10$VWX567', 'sofia@empresa.com', 'Sofía Ramírez', 'Administrador', '3198765432');
+INSERT INTO Usuario (cedula, contrasena, correo, nombre_Completo, rol, telefono) VALUES('75482916', '$2a$10$YZA890', 'fernando@empresa.com', 'Fernando Torres', 'Coordinador','3023456789');

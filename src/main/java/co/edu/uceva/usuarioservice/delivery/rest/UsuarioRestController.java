@@ -5,7 +5,6 @@ import co.edu.uceva.usuarioservice.domain.model.Usuario;
 import co.edu.uceva.usuarioservice.domain.service.IUsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = {"http://localhost:4200"})
 @RestController
 @RequestMapping("/api/v1/usuario-service")
 public class UsuarioRestController {
@@ -30,25 +28,9 @@ public class UsuarioRestController {
     private static final String USUARIO = "usuario";
     private static final String USUARIOS = "usuarios";
 
+    @Autowired
     public UsuarioRestController(IUsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-    }
-    @RestController
-    @RequestMapping("/api/test")
-    public class TestController {
-
-        @Autowired
-        private DataSource dataSource;
-
-        @GetMapping("/db")
-        public ResponseEntity<String> testDatabase() {
-            try (Connection conn = dataSource.getConnection()) {
-                return ResponseEntity.ok("Conexión exitosa a: " + conn.getMetaData().getURL());
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Error de conexión: " + e.getMessage());
-            }
-        }
     }
 
     @GetMapping("/usuarios")
@@ -62,32 +44,65 @@ public class UsuarioRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/usuario/page/{page}")
-    public ResponseEntity<?> getUsuariosPaginated(@PathVariable Integer page) {
-        try {
-            if (page < 0) {
-                return ResponseEntity.badRequest().body(Map.of(
-                        "error", "El número de página no puede ser negativo",
-                        "pagina_solicitada", page
-                ));
-            }
-
-            Pageable pageable = PageRequest.of(page, 4); // 4 usuarios por página
-            Page<Usuario> usuarios = usuarioService.findAll(pageable);
-
-            return ResponseEntity.ok(Map.of(
-                    "pagina_actual", page,
-                    "total_paginas", usuarios.getTotalPages(),
-                    "total_usuarios", usuarios.getTotalElements(),
-                    "usuarios", usuarios.getContent()
-            ));
-
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of(
-                    "error", "Error al recuperar usuarios",
-                    "mensaje", e.getMessage()
-            ));
+    @GetMapping("/usuarios/coordinadores")
+    public ResponseEntity<Map<String, Object>> getUsuariosCoordinadores() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        if (usuarios.isEmpty()) {
+            throw new NoHayUsuariosException();
         }
+        List<Usuario> coordinadores = usuarios.stream()
+                .filter(usuario -> "Coordinador".equals(usuario.getRol()))
+                .toList();
+        if (coordinadores.isEmpty()) {
+            throw new RuntimeException("No hay coordinadores registrados en el sistema");
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put(USUARIOS, coordinadores);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/usuarios/decanos")
+    public ResponseEntity<Map<String, Object>> getUsuariosDecanos() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        if (usuarios.isEmpty()) {
+            throw new NoHayUsuariosException();
+        }
+        List<Usuario> decanos = usuarios.stream()
+                .filter(usuario -> "Decano".equals(usuario.getRol()))
+                .toList();
+        if (decanos.isEmpty()) {
+            throw new RuntimeException("No hay decanos registrados en el sistema");
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put(USUARIOS, decanos);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/usuarios/docentes")
+    public ResponseEntity<Map<String, Object>> getUsuariosDocentes() {
+        List<Usuario> usuarios = usuarioService.findAll();
+        if (usuarios.isEmpty()) {
+            throw new NoHayUsuariosException();
+        }
+        List<Usuario> docentes = usuarios.stream()
+                .filter(usuario -> "Docente".equals(usuario.getRol()))
+                .toList();
+        if (docentes.isEmpty()) {
+            throw new RuntimeException("No hay docentes registrados en el sistema");
+        }
+        Map<String, Object> response = new HashMap<>();
+        response.put(USUARIOS, docentes);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/usuario/page/{page}")
+    public ResponseEntity<Object> index(@PathVariable Integer page) {
+        Pageable pageable = PageRequest.of(page, 4);
+        Page<Usuario> usuarios = usuarioService.findAll(pageable);
+        if (usuarios.isEmpty()) {
+            throw new PaginaSinUsuariosException(page);
+        }
+        return ResponseEntity.ok(usuarios);
     }
 
     @PostMapping("/usuarios")
@@ -95,12 +110,6 @@ public class UsuarioRestController {
         if (result.hasErrors()) {
             throw new ValidationException(result);
         }
-
-        // Verificar si el correo ya existe
-        if (usuarioService.existsByCorreo(usuario.getCorreo())) {
-            throw new CorreoExistenteException(usuario.getCorreo());
-        }
-
         Map<String, Object> response = new HashMap<>();
         Usuario nuevoUsuario = usuarioService.save(usuario);
         response.put(MENSAJE, "El usuario ha sido creado con éxito!");
@@ -126,14 +135,6 @@ public class UsuarioRestController {
         }
         usuarioService.findById(usuario.getId())
                 .orElseThrow(() -> new UsuarioNoEncontradoException(usuario.getId()));
-
-        // Validar que el correo no esté siendo usado por otro usuario
-        Usuario usuarioExistente = usuarioService.findByCorreo(usuario.getCorreo())
-                .orElse(null);
-        if (usuarioExistente != null && !usuarioExistente.getId().equals(usuario.getId())) {
-            throw new CorreoExistenteException(usuario.getCorreo());
-        }
-
         Map<String, Object> response = new HashMap<>();
         Usuario usuarioActualizado = usuarioService.update(usuario);
         response.put(MENSAJE, "El usuario ha sido actualizado con éxito!");

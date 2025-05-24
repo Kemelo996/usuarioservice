@@ -14,6 +14,4 @@ public interface IUsuarioService {
     Usuario update(Usuario usuario);
     List<Usuario> findAll();
     Page<Usuario> findAll(Pageable pageable);
-    boolean existsByCorreo(String correo);
-    Optional<Usuario> findByCorreo(String correo);
 }

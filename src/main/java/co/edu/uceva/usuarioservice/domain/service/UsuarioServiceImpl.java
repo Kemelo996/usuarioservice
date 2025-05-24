@@ -12,13 +12,10 @@ import java.util.Optional;
 
 @Service
 public class UsuarioServiceImpl implements IUsuarioService {
-
-    private final IUsuarioRepository usuarioRepository;
-
+    IUsuarioRepository usuarioRepository;
     public UsuarioServiceImpl(IUsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
-
 
     @Override
     @Transactional
@@ -54,17 +51,5 @@ public class UsuarioServiceImpl implements IUsuarioService {
     @Transactional(readOnly = true)
     public Page<Usuario> findAll(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existsByCorreo(String correo) {
-        return usuarioRepository.existsByCorreo(correo);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Usuario> findByCorreo(String correo) {
-        return usuarioRepository.findByCorreo(correo);
     }
 }
