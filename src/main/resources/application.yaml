@@ -30,7 +30,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: 'true'
   application:
-    name: usuarioservice
+    name: usuario-service
 logging:
   level:
     org:

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>co.edu.uceva</groupId>
-    <artifactId>usuarioservice</artifactId>
+    <artifactId>usuario-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>usuarioservice</name>
     <description>usuarioservice</description>
